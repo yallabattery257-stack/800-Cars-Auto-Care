@@ -226,29 +226,20 @@ input::placeholder{
 <div class="login-container">
 
     <div class="logo">
-
         <div class="logo-icon">800</div>
-
         <h1>800 CAR <span>AUTO CARE</span></h1>
-
         <p>PROFESSIONAL AUTOMOTIVE SERVICES</p>
-
     </div>
 
     <div class="heading">
-
         <h2>Welcome Back</h2>
-
         <p>Login to access your Garage Management System</p>
-
     </div>
 
     <form id="loginForm">
 
         <div class="form-group">
-
             <label for="username">Username / Email</label>
-
             <input
                 type="text"
                 id="username"
@@ -256,15 +247,12 @@ input::placeholder{
                 autocomplete="username"
                 required
             >
-
         </div>
 
         <div class="form-group">
-
             <label for="password">Password</label>
 
             <div class="input-box">
-
                 <input
                     type="password"
                     id="password"
@@ -278,28 +266,19 @@ input::placeholder{
                     type="button"
                     class="show-password"
                     onclick="togglePassword()"
-                >
-                    SHOW
-                </button>
-
+                >SHOW</button>
             </div>
-
         </div>
 
         <div class="options">
-
             <label class="remember">
-
                 <input type="checkbox" id="remember">
-
                 Remember me
-
             </label>
 
             <a href="#" class="forgot" onclick="forgotPassword(event)">
                 Forgot Password?
             </a>
-
         </div>
 
         <button type="submit" class="login-btn">
@@ -311,18 +290,18 @@ input::placeholder{
     </form>
 
     <div class="footer">
-
         <p>800 Car Auto Care CRM</p>
-
         <p>Secure Garage Management System</p>
-
         <p>© 2026 <span>800 Car Auto Care</span>. All Rights Reserved.</p>
-
     </div>
 
 </div>
 
 <script>
+
+// LOGIN CREDENTIALS
+const ADMIN_USERNAME = "Shoaib";
+const ADMIN_PASSWORD = "Shoaib@800";
 
 function togglePassword(){
 
@@ -330,27 +309,20 @@ function togglePassword(){
     const button = document.querySelector(".show-password");
 
     if(password.type === "password"){
-
         password.type = "text";
         button.textContent = "HIDE";
-
     }else{
-
         password.type = "password";
         button.textContent = "SHOW";
-
     }
-
 }
 
 function forgotPassword(event){
-
     event.preventDefault();
 
     showMessage(
         "Please contact your CRM administrator to reset your password."
     );
-
 }
 
 function showMessage(text){
@@ -359,16 +331,26 @@ function showMessage(text){
 
     message.style.display = "block";
     message.textContent = text;
-
 }
 
 document.getElementById("loginForm").addEventListener("submit",function(event){
 
     event.preventDefault();
 
-    showMessage(
-        "Login authentication is not connected yet. Database and secure user accounts will be configured next."
-    );
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+
+    if(username === ADMIN_USERNAME && password === ADMIN_PASSWORD){
+
+        sessionStorage.setItem("800carcare_logged_in","true");
+
+        window.location.href = "dashboard.html";
+
+    }else{
+
+        showMessage("Invalid username or password. Please try again.");
+
+    }
 
 });
 
