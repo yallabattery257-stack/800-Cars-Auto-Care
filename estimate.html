@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair Estimate | 800 Car Auto Care</title>
+
+<style>
+*{box-sizing:border-box}
+:root{--red:#d71920;--black:#171717}
+body{margin:0;background:#f3f4f6;color:#222;font-family:Arial,sans-serif}
+.sidebar{
+ position:fixed;left:0;top:0;width:230px;height:100vh;
+ background:var(--black);color:white;padding:22px 15px
+}
+.brand{font-size:21px;font-weight:bold;margin-bottom:30px}
+.brand span{color:var(--red)}
+.sidebar a{
+ display:block;color:#ddd;text-decoration:none;padding:12px;
+ margin:5px 0;border-radius:6px;font-size:14px
+}
+.sidebar a:hover,.sidebar a.active{background:var(--red);color:white}
+.main{margin-left:230px;padding:25px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:25px;margin:0}
+.sub{font-size:13px;color:#777;margin-top:6px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 10px #00000009}
+.card h2{font-size:17px;margin:0 0 17px;border-bottom:2px solid var(--red);padding-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{display:block;font-size:12px;font-weight:bold;color:#555;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:6px;font-size:13px}
+textarea{min-height:65px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th{background:#222;color:white;font-size:12px;text-align:left}
+td,th{padding:11px 8px;border-bottom:1px solid #eee;font-size:12px}
+td input{padding:8px;min-width:75px}
+td button{background:#d71920;color:white;border:0;padding:7px 10px;border-radius:5px;cursor:pointer}
+.btn{border:0;padding:12px 18px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px}
+.red{background:var(--red);color:white}
+.dark{background:#222;color:white}
+.light{background:#eee;color:#222}
+.totals{max-width:400px;margin-left:auto}
+.total-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;font-size:14px}
+.grand{font-size:19px;font-weight:bold;color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+#estimatePrint{display:none}
+@media(max-width:850px){
+ .sidebar{position:relative;width:100%;height:auto;padding:12px}
+ .brand{margin-bottom:10px}
+ .sidebar nav{display:flex;overflow-x:auto}
+ .sidebar a{white-space:nowrap}
+ .main{margin:0;padding:14px}
+ .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:21px}}
+@media print{
+ body{background:white}
+ .sidebar,.top,.actions,.no-print{display:none!important}
+ .main{margin:0;padding:0}
+ .card{box-shadow:none;border:0}
+ #estimatePrint{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+ <div class="brand">800 <span>CAR</span><br>AUTO CARE</div>
+ <nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="customers.html">Customers</a>
+  <a href="vehicles.html">Vehicles</a>
+  <a href="inspection.html">Vehicle Inspection</a>
+  <a class="active" href="estimate.html">Estimates</a>
+  <a href="jobs.html">Jobs</a>
+  <a href="invoice.html">Invoices</a>
+  <a href="employees.html">Employees</a>
+  <a href="reports.html">Reports</a>
+ </nav>
+</aside>
+
+<main class="main">
+
+<div class="top">
+ <div>
+  <h1>Repair Estimate / Quotation</h1>
+  <div class="sub">800 Car Auto Care | Customer Repair Approval</div>
+ </div>
+ <button class="btn dark" onclick="location.href='inspection.html'">← Inspection</button>
+</div>
+
+<div class="card">
+ <h2>Estimate Information</h2>
+ <div class="grid">
+  <div><label>Estimate Number</label><input id="estimateNo" readonly></div>
+  <div><label>Estimate Date</label><input id="date" type="date"></div>
+  <div><label>Inspection Reference</label><input id="inspectionRef" placeholder="Inspection ID"></div>
+  <div><label>Customer Name</label><input id="customer" placeholder="Customer name"></div>
+  <div><label>Phone Number</label><input id="phone" placeholder="Phone number"></div>
+  <div><label>Vehicle</label><input id="vehicle" placeholder="Make / Model / Year"></div>
+  <div><label>Plate Number</label><input id="plate" placeholder="Plate number"></div>
+  <div><label>VIN Number</label><input id="vin" placeholder="VIN"></div>
+  <div><label>Prepared By</label><input id="preparedBy" placeholder="Employee name"></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Repair Items & Services</h2>
+ <p class="sub">Add parts, labour and other repair services. Select inspection items to transfer them into this quotation.</p>
+
+ <div class="actions no-print" style="margin-top:0">
+  <button class="btn dark" onclick="loadInspectionItems()">Load Inspection Repair Items</button>
+  <button class="btn red" onclick="addRow()">+ Add Item</button>
+ </div>
+
+ <div class="table-wrap">
+ <table>
+  <thead>
+   <tr>
+    <th>Item / Description</th>
+    <th>Type</th>
+    <th>Qty</th>
+    <th>Unit Price (AED)</th>
+    <th>Total (AED)</th>
+    <th class="no-print">Remove</th>
+   </tr>
+  </thead>
+  <tbody id="items"></tbody>
+ </table>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Additional Details</h2>
+ <div class="grid">
+  <div><label>Estimated Completion</label><input id="completion" placeholder="e.g. 2 hours / 1 day"></div>
+  <div><label>Estimate Validity</label><input id="validity" placeholder="e.g. 7 days"></div>
+  <div><label>Customer Approval</label>
+   <select id="approval">
+    <option>Pending</option>
+    <option>Approved</option>
+    <option>Rejected</option>
+   </select>
+  </div>
+ </div>
+ <br>
+ <label>Terms & Conditions</label>
+ <textarea id="terms">This quotation is subject to customer approval. Additional repairs will require separate approval. Prices are in AED.</textarea>
+ <br><br>
+ <label>Notes</label>
+ <textarea id="notes" placeholder="Additional information..."></textarea>
+</div>
+
+<div class="card">
+ <h2>Estimate Summary</h2>
+ <div class="totals">
+  <div class="total-row"><span>Subtotal</span><b id="subtotal">AED 0.00</b></div>
+  <div class="total-row">
+   <span>Discount (AED)</span>
+   <input id="discount" type="number" min="0" value="0" style="width:110px;text-align:right" oninput="calculate()">
+  </div>
+  <div class="total-row">
+   <span>VAT 5%</span>
+   <label style="display:flex;align-items:center;gap:7px">
+    <input id="vatEnabled" type="checkbox" checked style="width:auto" onchange="calculate()"> Enable
+   </label>
+  </div>
+  <div class="total-row"><span>VAT Amount</span><b id="vatAmount">AED 0.00</b></div>
+  <div class="total-row grand"><span>Grand Total</span><span id="grandTotal">AED 0.00</span></div>
+ </div>
+</div>
+
+<div class="actions no-print">
+ <button class="btn red" onclick="saveEstimate()">Save Estimate</button>
+ <button class="btn dark" onclick="printEstimate()">Print / Save PDF</button>
+ <button class="btn light" onclick="newEstimate()">New Estimate</button>
+</div>
+
+<div id="estimatePrint">
+ <h2>800 CAR AUTO CARE</h2>
+ <h3>REPAIR ESTIMATE / QUOTATION</h3>
+ <div id="printContent"></div>
+</div>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+
+let estimateId="EST-"+Date.now().toString().slice(-8);
+$("estimateNo").value=estimateId;
+$("date").value=new Date().toISOString().slice(0,10);
+
+function addRow(description="",type="Part",qty=1,price=0){
+ const tr=document.createElement("tr");
+
+ const name=document.createElement("input");
+ name.className="description";
+ name.value=description;
+ name.placeholder="Item description";
+
+ const select=document.createElement("select");
+ select.className="type";
+ ["Part","Labour","Service","Other"].forEach(t=>{
+  const o=document.createElement("option");
+  o.value=t;o.textContent=t;select.appendChild(o);
+ });
+ select.value=type;
+
+ const quantity=document.createElement("input");
+ quantity.type="number";quantity.min="0";quantity.step="any";
+ quantity.className="qty";quantity.value=qty;
+
+ const unit=document.createElement("input");
+ unit.type="number";unit.min="0";unit.step="any";
+ unit.className="price";unit.value=price;
+
+ const total=document.createElement("span");
+ total.className="lineTotal";total.textContent="0.00";
+
+ const remove=document.createElement("button");
+ remove.type="button";remove.textContent="X";
+ remove.onclick=()=>{tr.remove();calculate()};
+
+ [quantity,unit].forEach(el=>el.addEventListener("input",calculate));
+
+ function cell(el){
+  const td=document.createElement("td");td.appendChild(el);return td;
+ }
+
+ const totalCell=document.createElement("td");totalCell.appendChild(total);
+ const removeCell=document.createElement("td");removeCell.className="no-print";removeCell.appendChild(remove);
+
+ tr.append(cell(name),cell(select),cell(quantity),cell(unit),totalCell,removeCell);
+ $("items").appendChild(tr);
+ calculate();
+}
+
+function getRows(){
+ return [...$("items").querySelectorAll("tr")].map(tr=>({
+  description:tr.querySelector(".description").value,
+  type:tr.querySelector(".type").value,
+  qty:Number(tr.querySelector(".qty").value)||0,
+  price:Number(tr.querySelector(".price").value)||0,
+  total:(Number(tr.querySelector(".qty").value)||0)*(Number(tr.querySelector(".price").value)||0)
+ }));
+}
+
+function calculate(){
+ let subtotal=0;
+ document.querySelectorAll("#items tr").forEach(tr=>{
+  const qty=Number(tr.querySelector(".qty").value)||0;
+  const price=Number(tr.querySelector(".price").value)||0;
+  const total=qty*price;
+  subtotal+=total;
+  tr.querySelector(".lineTotal").textContent=total.toFixed(2);
+ });
+
+ const discount=Math.max(0,Number($("discount").value)||0);
+ const taxable=Math.max(0,subtotal-discount);
+ const vat=$("vatEnabled").checked?taxable*0.05:0;
+ const grand=taxable+vat;
+
+ $("subtotal").textContent="AED "+subtotal.toFixed(2);
+ $("vatAmount").textContent="AED "+vat.toFixed(2);
+ $("grandTotal").textContent="AED "+grand.toFixed(2);
+ return {subtotal,discount,vat,grand};
+}
+
+function loadInspectionItems(){
+ const inspection=JSON.parse(localStorage.getItem("800car_selected_inspection")||"null");
+ if(!inspection){
+  alert("No saved inspection found. Save an inspection first.");
+  return;
+ }
+
+ $("inspectionRef").value=inspection.id||"";
+ $("customer").value=inspection.customer||"";
+ $("phone").value=inspection.phone||"";
+ $("vehicle").value=[inspection.year,inspection.make,inspection.model].filter(Boolean).join(" ");
+ $("plate").value=inspection.plate||"";
+ $("vin").value=inspection.vin||"";
+ $("preparedBy").value=inspection.mechanic||"";
+
+ const repairItems=(inspection.conditions||[]).filter(x=>
+  x.condition==="Need Repair"||x.condition==="Need Replacement"
+ );
+
+ if(!repairItems.length){
+  alert("No repair or replacement items found in the saved inspection.");
+  return;
+ }
+
+ repairItems.forEach(item=>{
+  const already=[...document.querySelectorAll(".description")].some(
+   input=>input.value===item.item
+  );
+  if(!already)addRow(item.item,"Part",1,0);
+ });
+
+ alert(repairItems.length+" inspection items checked. Add prices and quantities.");
+}
+
+function collectEstimate(){
+ const totals=calculate();
+ return {
+  id:estimateId,
+  date:$("date").value,
+  inspectionRef:$("inspectionRef").value,
+  customer:$("customer").value,
+  phone:$("phone").value,
+  vehicle:$("vehicle").value,
+  plate:$("plate").value,
+  vin:$("vin").value,
+  preparedBy:$("preparedBy").value,
+  items:getRows(),
+  discount:totals.discount,
+  vatEnabled:$("vatEnabled").checked,
+  subtotal:totals.subtotal,
+  vat:totals.vat,
+  grandTotal:totals.grand,
+  completion:$("completion").value,
+  validity:$("validity").value,
+  approval:$("approval").value,
+  terms:$("terms").value,
+  notes:$("notes").value,
+  createdAt:new Date().toISOString()
+ };
+}
+
+function saveEstimate(){
+ const data=collectEstimate();
+
+ if(!data.customer||!data.plate){
+  alert("Please enter customer name and vehicle plate.");
+  return;
+ }
+ if(!data.items.length||!data.items.some(x=>x.description.trim())){
+  alert("Please add at least one repair item.");
+  return;
+ }
+ if(data.items.some(x=>x.description.trim()&&x.price<0)){
+  alert("Price cannot be negative.");
+  return;
+ }
+
+ let records=JSON.parse(localStorage.getItem("800car_estimates")||"[]");
+ const index=records.findIndex(x=>x.id===data.id);
+ if(index>=0)records[index]=data;
+ else records.push(data);
+
+ localStorage.setItem("800car_estimates",JSON.stringify(records));
+ localStorage.setItem("800car_selected_estimate",JSON.stringify(data));
+ alert("Estimate saved successfully!");
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function printEstimate(){
+ const d=collectEstimate();
+ if(!d.customer||!d.plate){
+  alert("Enter customer name and plate number first.");return;
+ }
+
+ const rows=d.items.map(x=>`
+ <tr>
+ <td>${escapeHTML(x.description)}</td>
+ <td>${escapeHTML(x.type)}</td>
+ <td>${x.qty}</td>
+ <td>${x.price.toFixed(2)}</td>
+ <td>${x.total.toFixed(2)}</td>
+ </tr>`).join("");
+
+ $("printContent").innerHTML=`
+ <p><b>Estimate No:</b> ${escapeHTML(d.id)} &nbsp; <b>Date:</b> ${escapeHTML(d.date)}</p>
+ <p><b>Customer:</b> ${escapeHTML(d.customer)} &nbsp; <b>Phone:</b> ${escapeHTML(d.phone)}</p>
+ <p><b>Vehicle:</b> ${escapeHTML(d.vehicle)} &nbsp; <b>Plate:</b> ${escapeHTML(d.plate)}</p>
+ <p><b>VIN:</b> ${escapeHTML(d.vin)} &nbsp; <b>Inspection Ref:</b> ${escapeHTML(d.inspectionRef)}</p>
+ <p><b>Prepared By:</b> ${escapeHTML(d.preparedBy)}</p>
+ <table border="1" cellpadding="7" cellspacing="0" width="100%" style="border-collapse:collapse;font-size:11px">
+ <tr><th>Description</th><th>Type</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+ ${rows}</table>
+ <h3>Payment Summary</h3>
+ <p>Subtotal: AED ${d.subtotal.toFixed(2)}</p>
+ <p>Discount: AED ${d.discount.toFixed(2)}</p>
+ <p>VAT ${d.vatEnabled?"5%":"(Disabled)"}: AED ${d.vat.toFixed(2)}</p>
+ <h2>Grand Total: AED ${d.grandTotal.toFixed(2)}</h2>
+ <p><b>Estimated Completion:</b> ${escapeHTML(d.completion)}</p>
+ <p><b>Validity:</b> ${escapeHTML(d.validity)}</p>
+ <p><b>Approval Status:</b> ${escapeHTML(d.approval)}</p>
+ <p><b>Terms:</b> ${escapeHTML(d.terms)}</p>
+ <p><b>Notes:</b> ${escapeHTML(d.notes)}</p>
+ <br><br>
+ <p>Customer Signature: ____________________</p>
+ <p>Authorized Signature: ____________________</p>
+ <hr><b>800 CAR AUTO CARE</b>
+ `;
+ window.print();
+}
+
+function newEstimate(){
+ if(!confirm("Start a new estimate?"))return;
+ $("items").innerHTML="";
+ document.querySelectorAll("input:not([type=checkbox]),textarea").forEach(x=>x.value="");
+ $("vatEnabled").checked=true;
+ $("approval").value="Pending";
+ estimateId="EST-"+Date.now().toString().slice(-8);
+ $("estimateNo").value=estimateId;
+ $("date").value=new Date().toISOString().slice(0,10);
+ addRow();
+ calculate();
+}
+
+addRow();
+</script>
+
+</body>
+</html>
