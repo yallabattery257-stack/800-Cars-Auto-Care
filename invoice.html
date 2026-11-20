@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice | 800 Car Auto Care</title>
+
+<style>
+*{box-sizing:border-box}
+:root{--red:#d71920;--black:#171717}
+body{margin:0;background:#f3f4f6;color:#222;font-family:Arial,sans-serif}
+.sidebar{position:fixed;left:0;top:0;width:230px;height:100vh;background:var(--black);color:white;padding:22px 15px}
+.brand{font-size:21px;font-weight:bold;margin-bottom:30px}
+.brand span{color:var(--red)}
+.sidebar a{display:block;color:#ddd;text-decoration:none;padding:12px;margin:5px 0;border-radius:6px;font-size:14px}
+.sidebar a:hover,.sidebar a.active{background:var(--red);color:white}
+.main{margin-left:230px;padding:25px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:25px;margin:0}
+.sub{font-size:13px;color:#777;margin-top:6px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 10px #00000009}
+.card h2{font-size:17px;margin:0 0 17px;border-bottom:2px solid var(--red);padding-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{display:block;font-size:12px;font-weight:bold;color:#555;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:white}
+textarea{min-height:65px}
+.btn{border:0;padding:12px 17px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
+.red{background:var(--red);color:white}
+.dark{background:#222;color:white}
+.light{background:#eee;color:#222}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th{background:#222;color:white;text-align:left;font-size:12px}
+td,th{padding:11px 8px;border-bottom:1px solid #eee;font-size:12px}
+td input{padding:8px;min-width:70px}
+td button{background:var(--red);color:white;border:0;padding:7px 10px;border-radius:5px;cursor:pointer}
+.totals{max-width:400px;margin-left:auto}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;font-size:14px}
+.grand{font-size:20px;font-weight:bold;color:var(--red)}
+#invoicePrint{display:none}
+@media(max-width:850px){
+ .sidebar{position:relative;width:100%;height:auto;padding:12px}
+ .brand{margin-bottom:10px}
+ .sidebar nav{display:flex;overflow-x:auto}
+ .sidebar a{white-space:nowrap}
+ .main{margin:0;padding:14px}
+ .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:21px}}
+@media print{
+ body{background:white}
+ .sidebar,.top,.actions,.no-print{display:none!important}
+ .main{margin:0;padding:0}
+ .card{box-shadow:none;border:0;padding:5px}
+ #invoicePrint{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+ <div class="brand">800 <span>CAR</span><br>AUTO CARE</div>
+ <nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="customers.html">Customers</a>
+  <a href="vehicles.html">Vehicles</a>
+  <a href="inspection.html">Vehicle Inspection</a>
+  <a href="estimate.html">Estimates</a>
+  <a href="jobs.html">Jobs</a>
+  <a class="active" href="invoice.html">Invoices</a>
+  <a href="employees.html">Employees</a>
+  <a href="reports.html">Reports</a>
+ </nav>
+</aside>
+
+<main class="main">
+
+<div class="top">
+ <div>
+  <h1>Final Tax Invoice</h1>
+  <div class="sub">800 Car Auto Care | Customer Billing</div>
+ </div>
+ <button class="btn dark" onclick="location.href='jobs.html'">← Back to Jobs</button>
+</div>
+
+<div class="card no-print">
+ <h2>Load Completed Job</h2>
+ <div class="grid">
+  <div>
+   <label>Select Job</label>
+   <select id="jobSelect">
+    <option value="">Select a job</option>
+   </select>
+  </div>
+  <div style="align-self:end">
+   <button class="btn red" onclick="loadJob()">Load Job Details</button>
+  </div>
+ </div>
+ <p class="sub">You can also create an invoice manually without selecting a job.</p>
+</div>
+
+<div class="card">
+ <h2>Invoice Information</h2>
+ <div class="grid">
+  <div><label>Invoice Number</label><input id="invoiceNo" readonly></div>
+  <div><label>Invoice Date</label><input id="invoiceDate" type="date"></div>
+  <div><label>Job Card Number</label><input id="jobRef" placeholder="Job number"></div>
+  <div><label>Customer Name</label><input id="customer" placeholder="Customer name"></div>
+  <div><label>Phone Number</label><input id="phone" placeholder="Phone number"></div>
+  <div><label>Customer TRN (Optional)</label><input id="customerTRN" placeholder="Customer TRN"></div>
+  <div><label>Vehicle</label><input id="vehicle" placeholder="Make / Model / Year"></div>
+  <div><label>Plate Number</label><input id="plate" placeholder="Plate number"></div>
+  <div><label>VIN Number</label><input id="vin" placeholder="VIN"></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Company Information</h2>
+ <div class="grid">
+  <div><label>Company Name</label><input id="company" value="800 Car Auto Care"></div>
+  <div><label>Company TRN</label><input id="companyTRN" placeholder="Enter company TRN"></div>
+  <div><label>Phone</label><input id="companyPhone" placeholder="Company phone"></div>
+  <div><label>Email</label><input id="companyEmail" placeholder="Company email"></div>
+  <div><label>Address</label><input id="companyAddress" placeholder="Dubai, UAE"></div>
+  <div><label>Invoice Prepared By</label><input id="preparedBy" placeholder="Employee name"></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Parts & Services</h2>
+ <div class="actions no-print">
+  <button class="btn red" onclick="addRow()">+ Add Invoice Item</button>
+ </div>
+ <div class="table-wrap">
+ <table>
+  <thead>
+   <tr>
+    <th>Description</th>
+    <th>Type</th>
+    <th>Qty</th>
+    <th>Unit Price (AED)</th>
+    <th>Total (AED)</th>
+    <th class="no-print">Remove</th>
+   </tr>
+  </thead>
+  <tbody id="items"></tbody>
+ </table>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Payment Details</h2>
+ <div class="grid">
+  <div><label>Payment Method</label>
+   <select id="paymentMethod">
+    <option>Cash</option>
+    <option>Card</option>
+    <option>Bank Transfer</option>
+    <option>Payment Link</option>
+    <option>Other</option>
+   </select>
+  </div>
+  <div><label>Payment Status</label>
+   <select id="paymentStatus">
+    <option>Unpaid</option>
+    <option>Partially Paid</option>
+    <option>Paid</option>
+   </select>
+  </div>
+  <div><label>Amount Received (AED)</label><input id="received" type="number" min="0" value="0" oninput="calculate()"></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Invoice Summary</h2>
+ <div class="totals">
+  <div class="total-row"><span>Subtotal</span><b id="subtotal">AED 0.00</b></div>
+  <div class="total-row">
+   <span>Discount (AED)</span>
+   <input id="discount" type="number" min="0" value="0" style="width:110px;text-align:right" oninput="calculate()">
+  </div>
+  <div class="total-row">
+   <span>VAT 5%</span>
+   <label style="display:flex;align-items:center;gap:7px">
+    <input id="vatEnabled" type="checkbox" checked style="width:auto" onchange="calculate()"> Enable
+   </label>
+  </div>
+  <div class="total-row"><span>VAT Amount</span><b id="vatAmount">AED 0.00</b></div>
+  <div class="total-row grand"><span>Grand Total</span><span id="grandTotal">AED 0.00</span></div>
+  <div class="total-row"><span>Amount Received</span><b id="receivedDisplay">AED 0.00</b></div>
+  <div class="total-row"><span>Balance Due</span><b id="balance">AED 0.00</b></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Notes & Terms</h2>
+ <label>Invoice Notes</label>
+ <textarea id="notes" placeholder="Additional notes..."></textarea>
+ <br><br>
+ <label>Terms & Conditions</label>
+ <textarea id="terms">Thank you for choosing 800 Car Auto Care. Please keep this invoice for your records. Warranty is subject to the agreed service and parts warranty terms.</textarea>
+</div>
+
+<div class="actions no-print">
+ <button class="btn red" onclick="saveInvoice()">Save Invoice</button>
+ <button class="btn dark" onclick="printInvoice()">Print / Save PDF</button>
+ <button class="btn light" onclick="newInvoice()">New Invoice</button>
+</div>
+
+<div id="invoicePrint">
+ <div style="border-bottom:4px solid #d71920;padding-bottom:15px">
+  <h1 style="color:#d71920">800 CAR AUTO CARE</h1>
+  <h3>TAX INVOICE</h3>
+  <p id="printCompany"></p>
+ </div>
+ <div id="printContent"></div>
+ <p style="margin-top:40px;text-align:center">Thank you for your business!</p>
+</div>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+let invoices=JSON.parse(localStorage.getItem("800car_invoices")||"[]");
+let invoiceId="INV-"+Date.now().toString().slice(-8);
+
+function init(){
+ $("invoiceNo").value=invoiceId;
+ $("invoiceDate").value=new Date().toISOString().slice(0,10);
+ loadJobOptions();
+ addRow();
+}
+
+function loadJobOptions(){
+ const jobs=JSON.parse(localStorage.getItem("800car_jobs")||"[]");
+ jobs.forEach(j=>{
+  const option=document.createElement("option");
+  option.value=j.id;
+  option.textContent=j.id+" - "+j.customer+" - "+j.plate+" ("+j.status+")";
+  $("jobSelect").appendChild(option);
+ });
+}
+
+function loadJob(){
+ const id=$("jobSelect").value;
+ if(!id){alert("Please select a job.");return;}
+
+ const jobs=JSON.parse(localStorage.getItem("800car_jobs")||"[]");
+ const job=jobs.find(j=>j.id===id);
+ if(!job)return;
+
+ if(job.status!=="Completed"&&job.status!=="Delivered"){
+  if(!confirm("This job is not marked Completed or Delivered. Load it anyway?"))return;
+ }
+
+ $("jobRef").value=job.id||"";
+ $("customer").value=job.customer||"";
+ $("phone").value=job.phone||"";
+ $("vehicle").value=job.vehicle||"";
+ $("plate").value=job.plate||"";
+ $("vin").value=job.vin||"";
+ $("preparedBy").value=job.mechanic||"";
+
+ const estimate=JSON.parse(localStorage.getItem("800car_estimates")||"[]")
+ .find(x=>x.id===job.estimateRef);
+
+ $("items").innerHTML="";
+ if(estimate&&estimate.items&&estimate.items.length){
+  estimate.items.forEach(x=>addRow(x.description,x.type,x.qty,x.price));
+  $("discount").value=estimate.discount||0;
+  $("vatEnabled").checked=estimate.vatEnabled!==false;
+ }else{
+  addRow(job.work||"Repair Services","Service",1,job.amount||0);
+ }
+
+ calculate();
+ alert("Job details loaded. Please check the invoice items and amounts.");
+}
+
+function addRow(description="",type="Part",qty=1,price=0){
+ const tr=document.createElement("tr");
+ const name=document.createElement("input");
+ name.className="description";name.value=description;name.placeholder="Description";
+
+ const select=document.createElement("select");
+ select.className="type";
+ ["Part","Labour","Service","Other"].forEach(x=>{
+  const o=document.createElement("option");o.value=x;o.textContent=x;select.appendChild(o);
+ });
+ select.value=type;
+
+ const quantity=document.createElement("input");
+ quantity.type="number";quantity.min="0";quantity.step="any";quantity.className="qty";quantity.value=qty;
+
+ const unit=document.createElement("input");
+ unit.type="number";unit.min="0";unit.step="any";unit.className="price";unit.value=price;
+
+ const total=document.createElement("span");
+ total.className="lineTotal";
+
+ const remove=document.createElement("button");
+ remove.type="button";remove.textContent="X";
+ remove.onclick=()=>{tr.remove();calculate()};
+
+ [quantity,unit].forEach(x=>x.addEventListener("input",calculate));
+
+ function cell(el){
+  const td=document.createElement("td");td.appendChild(el);return td;
+ }
+ const totalCell=cell(total);
+ const removeCell=cell(remove);removeCell.className="no-print";
+
+ tr.append(cell(name),cell(select),cell(quantity),cell(unit),totalCell,removeCell);
+ $("items").appendChild(tr);
+ calculate();
+}
+
+function getRows(){
+ return [...$("items").querySelectorAll("tr")].map(tr=>({
+  description:tr.querySelector(".description").value,
+  type:tr.querySelector(".type").value,
+  qty:Number(tr.querySelector(".qty").value)||0,
+  price:Number(tr.querySelector(".price").value)||0,
+  total:(Number(tr.querySelector(".qty").value)||0)*(Number(tr.querySelector(".price").value)||0)
+ }));
+}
+
+function calculate(){
+ let subtotal=0;
+ document.querySelectorAll("#items tr").forEach(tr=>{
+  const qty=Number(tr.querySelector(".qty").value)||0;
+  const price=Number(tr.querySelector(".price").value)||0;
+  const total=qty*price;
+  subtotal+=total;
+  tr.querySelector(".lineTotal").textContent=total.toFixed(2);
+ });
+
+ const discount=Math.max(0,Number($("discount").value)||0);
+ const taxable=Math.max(0,subtotal-discount);
+ const vat=$("vatEnabled").checked?taxable*.05:0;
+ const grand=taxable+vat;
+ const received=Math.max(0,Number($("received").value)||0);
+ const balance=grand-received;
+
+ $("subtotal").textContent="AED "+subtotal.toFixed(2);
+ $("vatAmount").textContent="AED "+vat.toFixed(2);
+ $("grandTotal").textContent="AED "+grand.toFixed(2);
+ $("receivedDisplay").textContent="AED "+received.toFixed(2);
+ $("balance").textContent="AED "+balance.toFixed(2);
+
+ return {subtotal,discount,vat,grand,received,balance};
+}
+
+function collectInvoice(){
+ const t=calculate();
+ return {
+  id:invoiceId,
+  date:$("invoiceDate").value,
+  jobRef:$("jobRef").value,
+  customer:$("customer").value,
+  phone:$("phone").value,
+  customerTRN:$("customerTRN").value,
+  vehicle:$("vehicle").value,
+  plate:$("plate").value,
+  vin:$("vin").value,
+  company:$("company").value,
+  companyTRN:$("companyTRN").value,
+  companyPhone:$("companyPhone").value,
+  companyEmail:$("companyEmail").value,
+  companyAddress:$("companyAddress").value,
+  preparedBy:$("preparedBy").value,
+  items:getRows(),
+  discount:t.discount,
+  vatEnabled:$("vatEnabled").checked,
+  subtotal:t.subtotal,
+  vat:t.vat,
+  grandTotal:t.grand,
+  received:t.received,
+  balance:t.balance,
+  paymentMethod:$("paymentMethod").value,
+  paymentStatus:$("paymentStatus").value,
+  notes:$("notes").value,
+  terms:$("terms").value,
+  createdAt:new Date().toISOString()
+ };
+}
+
+function saveInvoice(){
+ const d=collectInvoice();
+ if(!d.customer||!d.plate){
+  alert("Customer name and vehicle plate are required.");return;
+ }
+ if(!d.items.length||!d.items.some(x=>x.description.trim())){
+  alert("Please add at least one invoice item.");return;
+ }
+ if(d.items.some(x=>x.qty<0||x.price<0)){
+  alert("Quantity and price cannot be negative.");return;
+ }
+ if(d.discount>d.subtotal){
+  alert("Discount cannot be greater than subtotal.");return;
+ }
+ if(d.received>d.grandTotal){
+  alert("Amount received cannot exceed grand total.");return;
+ }
+
+ let index=invoices.findIndex(x=>x.id===d.id);
+ if(index>=0)invoices[index]=d;
+ else invoices.push(d);
+
+ localStorage.setItem("800car_invoices",JSON.stringify(invoices));
+ localStorage.setItem("800car_selected_invoice",JSON.stringify(d));
+
+ // Update related job payment status
+ if(d.jobRef){
+  let jobs=JSON.parse(localStorage.getItem("800car_jobs")||"[]");
+  const job=jobs.find(x=>x.id===d.jobRef);
+  if(job){
+   job.payment=d.balance<=0?"Paid":d.received>0?"Partially Paid":"Unpaid";
+   localStorage.setItem("800car_jobs",JSON.stringify(jobs));
+  }
+ }
+
+ alert("Invoice saved successfully!");
+}
+
+function esc(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function printInvoice(){
+ const d=collectInvoice();
+ if(!d.customer||!d.plate){
+  alert("Enter customer name and plate number first.");return;
+ }
+ const rows=d.items.map(x=>`
+ <tr>
+ <td>${esc(x.description)}</td><td>${esc(x.type)}</td>
+ <td>${x.qty}</td><td>${x.price.toFixed(2)}</td>
+ <td>${x.total.toFixed(2)}</td>
+ </tr>`).join("");
+
+ $("printCompany").innerHTML=`
+ ${esc(d.companyPhone)} | ${esc(d.companyEmail)}<br>
+ ${esc(d.companyAddress)}<br>
+ TRN: ${esc(d.companyTRN)}
+ `;
+
+ $("printContent").innerHTML=`
+ <p><b>Invoice No:</b> ${esc(d.id)} &nbsp; <b>Date:</b> ${esc(d.date)}</p>
+ <p><b>Job Reference:</b> ${esc(d.jobRef)}</p>
+ <h3>Customer Details</h3>
+ <p><b>Name:</b> ${esc(d.customer)} &nbsp; <b>Phone:</b> ${esc(d.phone)}</p>
+ <p><b>Customer TRN:</b> ${esc(d.customerTRN)}</p>
+ <h3>Vehicle Details</h3>
+ <p><b>Vehicle:</b> ${esc(d.vehicle)} &nbsp; <b>Plate:</b> ${esc(d.plate)}</p>
+ <p><b>VIN:</b> ${esc(d.vin)}</p>
+ <table border="1" cellpadding="8" cellspacing="0" width="100%" style="border-collapse:collapse;font-size:11px">
+ <tr><th>Description</th><th>Type</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+ ${rows}</table>
+ <h3>Invoice Summary</h3>
+ <p>Subtotal: AED ${d.subtotal.toFixed(2)}</p>
+ <p>Discount: AED ${d.discount.toFixed(2)}</p>
+ <p>VAT ${d.vatEnabled?"5%":"Disabled"}: AED ${d.vat.toFixed(2)}</p>
+ <h2 style="color:#d71920">Grand Total: AED ${d.grandTotal.toFixed(2)}</h2>
+ <p>Payment Method: ${esc(d.paymentMethod)}</p>
+ <p>Payment Status: ${esc(d.paymentStatus)}</p>
+ <p>Amount Received: AED ${d.received.toFixed(2)}</p>
+ <h3>Balance Due: AED ${d.balance.toFixed(2)}</h3>
+ <p><b>Notes:</b> ${esc(d.notes)}</p>
+ <p><b>Terms:</b> ${esc(d.terms)}</p>
+ <br><br>
+ <p>Customer Signature: _____________________</p>
+ <p>Authorized Signature: _____________________</p>
+ `;
+
+ window.print();
+}
+
+function newInvoice(){
+ if(!confirm("Create a new invoice?"))return;
+ invoiceId="INV-"+Date.now().toString().slice(-8);
+ $("invoiceNo").value=invoiceId;
+ document.querySelectorAll("input:not([type=checkbox]):not([readonly]),textarea").forEach(x=>x.value="");
+ $("items").innerHTML="";
+ $("vatEnabled").checked=true;
+ $("paymentStatus").value="Unpaid";
+ $("paymentMethod").value="Cash";
+ $("invoiceDate").value=new Date().toISOString().slice(0,10);
+ $("jobSelect").value="";
+ addRow();
+ calculate();
+}
+
+init();
+</script>
+
+</body>
+</html>
