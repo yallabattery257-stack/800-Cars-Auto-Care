@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Management | 800 Car Auto Care</title>
+
+<style>
+*{box-sizing:border-box}
+:root{--red:#d71920;--black:#171717}
+body{margin:0;background:#f3f4f6;color:#222;font-family:Arial,sans-serif}
+.sidebar{position:fixed;left:0;top:0;width:230px;height:100vh;background:var(--black);color:white;padding:22px 15px}
+.brand{font-size:21px;font-weight:bold;margin-bottom:30px}
+.brand span{color:var(--red)}
+.sidebar a{display:block;color:#ddd;text-decoration:none;padding:12px;margin:5px 0;border-radius:6px;font-size:14px}
+.sidebar a:hover,.sidebar a.active{background:var(--red);color:white}
+.main{margin-left:230px;padding:25px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:25px;margin:0}
+.sub{font-size:13px;color:#777;margin-top:6px}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 10px #00000009}
+.card h2{font-size:17px;margin:0 0 17px;border-bottom:2px solid var(--red);padding-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{display:block;font-size:12px;font-weight:bold;color:#555;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:white}
+textarea{min-height:65px}
+.btn{border:0;padding:11px 16px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
+.red{background:var(--red);color:white}
+.dark{background:#222;color:white}
+.light{background:#eee;color:#222}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:white;padding:17px;border-radius:9px;border-left:4px solid var(--red)}
+.stat span{font-size:12px;color:#777}
+.stat h2{margin:8px 0 0;font-size:25px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th{background:#222;color:white;text-align:left;font-size:12px}
+td,th{padding:12px 9px;border-bottom:1px solid #eee;font-size:12px}
+td button{margin:2px}
+.status{padding:5px 8px;border-radius:20px;background:#eee;font-size:11px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.hidden{display:none}
+.job-actions{display:flex;gap:5px;flex-wrap:wrap}
+@media(max-width:850px){
+ .sidebar{position:relative;width:100%;height:auto;padding:12px}
+ .brand{margin-bottom:10px}
+ .sidebar nav{display:flex;overflow-x:auto}
+ .sidebar a{white-space:nowrap}
+ .main{margin:0;padding:14px}
+ .stats{grid-template-columns:1fr 1fr}
+ .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:21px}}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+ <div class="brand">800 <span>CAR</span><br>AUTO CARE</div>
+ <nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="customers.html">Customers</a>
+  <a href="vehicles.html">Vehicles</a>
+  <a href="inspection.html">Vehicle Inspection</a>
+  <a href="estimate.html">Estimates</a>
+  <a class="active" href="jobs.html">Jobs</a>
+  <a href="invoice.html">Invoices</a>
+  <a href="employees.html">Employees</a>
+  <a href="reports.html">Reports</a>
+ </nav>
+</aside>
+
+<main class="main">
+
+<div class="top">
+ <div>
+  <h1>Job Management</h1>
+  <div class="sub">800 Car Auto Care | Workshop Job Tracking</div>
+ </div>
+ <button class="btn red" onclick="newJob()">+ Create New Job</button>
+</div>
+
+<div class="stats">
+ <div class="stat"><span>Total Jobs</span><h2 id="totalJobs">0</h2></div>
+ <div class="stat"><span>Pending</span><h2 id="pendingJobs">0</h2></div>
+ <div class="stat"><span>In Progress</span><h2 id="progressJobs">0</h2></div>
+ <div class="stat"><span>Completed</span><h2 id="completedJobs">0</h2></div>
+</div>
+
+<div class="card hidden" id="jobForm">
+ <h2 id="formTitle">Create Workshop Job</h2>
+
+ <div class="actions">
+  <button class="btn dark" onclick="loadApprovedEstimate()">Load Approved Estimate</button>
+ </div>
+
+ <div class="grid">
+  <div><label>Job Card Number</label><input id="jobId" readonly></div>
+  <div><label>Job Date</label><input id="jobDate" type="date"></div>
+  <div><label>Estimate Reference</label><input id="estimateRef" placeholder="Estimate number"></div>
+
+  <div><label>Customer Name</label><input id="customer" placeholder="Customer name"></div>
+  <div><label>Phone Number</label><input id="phone" placeholder="Phone"></div>
+  <div><label>Vehicle</label><input id="vehicle" placeholder="Make / Model / Year"></div>
+
+  <div><label>Plate Number</label><input id="plate" placeholder="Plate number"></div>
+  <div><label>VIN Number</label><input id="vin" placeholder="VIN"></div>
+  <div><label>Assigned Mechanic</label><input id="mechanic" placeholder="Mechanic name"></div>
+
+  <div><label>Job Priority</label>
+   <select id="priority">
+    <option>Normal</option><option>Urgent</option><option>High</option>
+   </select>
+  </div>
+
+  <div><label>Job Status</label>
+   <select id="status">
+    <option>Pending</option>
+    <option>In Progress</option>
+    <option>Waiting for Parts</option>
+    <option>On Hold</option>
+    <option>Completed</option>
+    <option>Delivered</option>
+    <option>Cancelled</option>
+   </select>
+  </div>
+
+  <div><label>Expected Completion</label><input id="expected" type="datetime-local"></div>
+  <div><label>Actual Completion</label><input id="actual" type="datetime-local"></div>
+  <div><label>Estimate Amount (AED)</label><input id="amount" type="number" min="0" placeholder="0.00"></div>
+  <div><label>Payment Status</label>
+   <select id="payment">
+    <option>Unpaid</option><option>Partially Paid</option><option>Paid</option>
+   </select>
+  </div>
+ </div>
+
+ <br>
+ <label>Work Description</label>
+ <textarea id="work" placeholder="Repairs and services to be performed..."></textarea>
+ <br><br>
+ <label>Mechanic Notes</label>
+ <textarea id="mechanicNotes" placeholder="Mechanic updates and observations..."></textarea>
+ <br><br>
+ <label>Delivery Notes</label>
+ <textarea id="deliveryNotes" placeholder="Vehicle delivery information..."></textarea>
+
+ <div class="actions" style="margin-top:18px">
+  <button class="btn red" onclick="saveJob()">Save Job</button>
+  <button class="btn light" onclick="closeForm()">Cancel</button>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Workshop Jobs</h2>
+ <div class="actions">
+  <input id="search" placeholder="Search customer, plate or job number..." oninput="renderJobs()" style="max-width:300px">
+  <select id="filterStatus" onchange="renderJobs()" style="max-width:200px">
+   <option value="">All Job Statuses</option>
+   <option>Pending</option>
+   <option>In Progress</option>
+   <option>Waiting for Parts</option>
+   <option>On Hold</option>
+   <option>Completed</option>
+   <option>Delivered</option>
+   <option>Cancelled</option>
+  </select>
+ </div>
+
+ <div class="table-wrap">
+ <table>
+  <thead>
+   <tr>
+    <th>Job No.</th>
+    <th>Date</th>
+    <th>Customer</th>
+    <th>Vehicle</th>
+    <th>Plate</th>
+    <th>Mechanic</th>
+    <th>Amount</th>
+    <th>Status</th>
+    <th>Actions</th>
+   </tr>
+  </thead>
+  <tbody id="jobRows"></tbody>
+ </table>
+ </div>
+ <p id="empty" style="text-align:center;color:#888;font-size:13px">No jobs created yet.</p>
+</div>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+let jobs=JSON.parse(localStorage.getItem("800car_jobs")||"[]");
+let editingId=null;
+
+function makeJobId(){
+ return "JOB-"+Date.now().toString().slice(-8);
+}
+
+function saveRecords(){
+ localStorage.setItem("800car_jobs",JSON.stringify(jobs));
+}
+
+function newJob(){
+ editingId=null;
+ clearForm();
+ $("jobId").value=makeJobId();
+ $("jobDate").value=new Date().toISOString().slice(0,10);
+ $("formTitle").textContent="Create Workshop Job";
+ $("jobForm").classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function clearForm(){
+ document.querySelectorAll("#jobForm input:not([readonly]),#jobForm textarea").forEach(x=>x.value="");
+ $("priority").value="Normal";
+ $("status").value="Pending";
+ $("payment").value="Unpaid";
+}
+
+function closeForm(){
+ $("jobForm").classList.add("hidden");
+}
+
+function loadApprovedEstimate(){
+ const estimate=JSON.parse(localStorage.getItem("800car_selected_estimate")||"null");
+
+ if(!estimate){
+  alert("No saved estimate found. Create and save an estimate first.");
+  return;
+ }
+
+ if(estimate.approval!=="Approved"){
+  if(!confirm("This estimate is not marked Approved. Load it anyway?"))return;
+ }
+
+ $("estimateRef").value=estimate.id||"";
+ $("customer").value=estimate.customer||"";
+ $("phone").value=estimate.phone||"";
+ $("vehicle").value=estimate.vehicle||"";
+ $("plate").value=estimate.plate||"";
+ $("vin").value=estimate.vin||"";
+ $("amount").value=estimate.grandTotal||0;
+
+ $("work").value=(estimate.items||[])
+ .map(x=>x.description+" ("+x.type+")")
+ .join("\n");
+
+ alert("Estimate details loaded. Assign a mechanic and complete the job details.");
+}
+
+function saveJob(){
+ const job={
+  id:$("jobId").value,
+  date:$("jobDate").value,
+  estimateRef:$("estimateRef").value,
+  customer:$("customer").value.trim(),
+  phone:$("phone").value.trim(),
+  vehicle:$("vehicle").value.trim(),
+  plate:$("plate").value.trim(),
+  vin:$("vin").value.trim(),
+  mechanic:$("mechanic").value.trim(),
+  priority:$("priority").value,
+  status:$("status").value,
+  expected:$("expected").value,
+  actual:$("actual").value,
+  amount:Number($("amount").value)||0,
+  payment:$("payment").value,
+  work:$("work").value,
+  mechanicNotes:$("mechanicNotes").value,
+  deliveryNotes:$("deliveryNotes").value,
+  updatedAt:new Date().toISOString()
+ };
+
+ if(!job.customer||!job.plate){
+  alert("Customer name and vehicle plate are required.");
+  return;
+ }
+ if(!job.mechanic){
+  alert("Please assign a mechanic.");
+  return;
+ }
+ if(job.amount<0){
+  alert("Amount cannot be negative.");
+  return;
+ }
+
+ const index=jobs.findIndex(x=>x.id===editingId);
+ if(index>=0)jobs[index]=job;
+ else jobs.push(job);
+
+ saveRecords();
+ renderJobs();
+ closeForm();
+ alert("Job saved successfully!");
+}
+
+function editJob(id){
+ const j=jobs.find(x=>x.id===id);
+ if(!j)return;
+ editingId=id;
+
+ const fields=["id","date","estimateRef","customer","phone","vehicle","plate","vin","mechanic","priority","status","expected","actual","amount","payment","work","mechanicNotes","deliveryNotes"];
+ const mapping={id:"jobId",date:"jobDate",estimateRef:"estimateRef",customer:"customer",phone:"phone",vehicle:"vehicle",plate:"plate",vin:"vin",mechanic:"mechanic",priority:"priority",status:"status",expected:"expected",actual:"actual",amount:"amount",payment:"payment",work:"work",mechanicNotes:"mechanicNotes",deliveryNotes:"deliveryNotes"};
+
+ fields.forEach(key=>$(mapping[key]).value=j[key]??"");
+ $("formTitle").textContent="Edit Workshop Job";
+ $("jobForm").classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deleteJob(id){
+ if(!confirm("Delete this job permanently from this browser?"))return;
+ jobs=jobs.filter(x=>x.id!==id);
+ saveRecords();
+ renderJobs();
+}
+
+function updateStatus(id){
+ const j=jobs.find(x=>x.id===id);
+ if(!j)return;
+
+ const newStatus=prompt(
+  "Enter status:\nPending\nIn Progress\nWaiting for Parts\nOn Hold\nCompleted\nDelivered\nCancelled",
+  j.status
+ );
+ if(newStatus===null)return;
+
+ const allowed=["Pending","In Progress","Waiting for Parts","On Hold","Completed","Delivered","Cancelled"];
+ if(!allowed.includes(newStatus.trim())){
+  alert("Invalid status. Please use one of the listed statuses.");
+  return;
+ }
+ j.status=newStatus.trim();
+ j.updatedAt=new Date().toISOString();
+ if(j.status==="Completed"&&!j.actual){
+  j.actual=new Date().toISOString().slice(0,16);
+ }
+ saveRecords();
+ renderJobs();
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function renderJobs(){
+ const q=$("search").value.toLowerCase();
+ const filter=$("filterStatus").value;
+ const tbody=$("jobRows");
+ tbody.innerHTML="";
+
+ const filtered=jobs.filter(j=>{
+  const text=[j.id,j.customer,j.plate,j.vehicle,j.mechanic].join(" ").toLowerCase();
+  return text.includes(q)&&(!filter||j.status===filter);
+ });
+
+ filtered.forEach(j=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+   <td>${escapeHTML(j.id)}</td>
+   <td>${escapeHTML(j.date)}</td>
+   <td>${escapeHTML(j.customer)}</td>
+   <td>${escapeHTML(j.vehicle)}</td>
+   <td>${escapeHTML(j.plate)}</td>
+   <td>${escapeHTML(j.mechanic)}</td>
+   <td>AED ${(Number(j.amount)||0).toFixed(2)}</td>
+   <td><span class="status">${escapeHTML(j.status)}</span></td>
+   <td>
+    <div class="job-actions">
+     <button class="btn dark" onclick="editJob('${escapeHTML(j.id)}')">Edit</button>
+     <button class="btn red" onclick="updateStatus('${escapeHTML(j.id)}')">Status</button>
+     <button class="btn light" onclick="deleteJob('${escapeHTML(j.id)}')">Delete</button>
+    </div>
+   </td>`;
+  tbody.appendChild(tr);
+ });
+
+ $("empty").style.display=filtered.length?"none":"block";
+
+ $("totalJobs").textContent=jobs.length;
+ $("pendingJobs").textContent=jobs.filter(j=>j.status==="Pending").length;
+ $("progressJobs").textContent=jobs.filter(j=>j.status==="In Progress").length;
+ $("completedJobs").textContent=jobs.filter(j=>j.status==="Completed"||j.status==="Delivered").length;
+}
+
+renderJobs();
+</script>
+
+</body>
+</html>
