@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Inspection | 800 Car Auto Care</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#f3f4f6;color:#222;
+ font-family:Arial,sans-serif;
+}
+:root{--red:#d71920;--black:#171717}
+.sidebar{
+ position:fixed;left:0;top:0;width:230px;height:100vh;
+ background:var(--black);color:white;padding:22px 15px;
+}
+.brand{font-size:21px;font-weight:bold;color:white;margin-bottom:30px}
+.brand span{color:var(--red)}
+.sidebar a{
+ display:block;color:#ddd;text-decoration:none;
+ padding:12px;margin:5px 0;border-radius:6px;font-size:14px
+}
+.sidebar a:hover,.sidebar a.active{background:var(--red);color:white}
+.main{margin-left:230px;padding:25px}
+.top{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;flex-wrap:wrap;margin-bottom:22px
+}
+h1{margin:0;font-size:25px}
+.sub{color:#777;font-size:13px;margin-top:6px}
+.card{
+ background:white;border-radius:10px;padding:20px;
+ margin-bottom:20px;box-shadow:0 2px 10px #00000009
+}
+.card h2{font-size:17px;margin:0 0 17px;border-bottom:2px solid var(--red);padding-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.field label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px;color:#555}
+input,select,textarea{
+ width:100%;padding:11px;border:1px solid #ddd;
+ border-radius:6px;font-size:14px;background:white
+}
+textarea{min-height:65px;resize:vertical}
+.section-title{
+ background:#222;color:white;padding:11px 13px;
+ margin:18px 0 0;border-radius:6px;font-size:14px
+}
+.item{
+ display:grid;grid-template-columns:1.2fr 1fr 1.5fr;
+ gap:10px;align-items:center;padding:12px 5px;
+ border-bottom:1px solid #eee
+}
+.item-name{font-size:13px;font-weight:bold}
+.item select{padding:9px;font-size:12px}
+.item input{padding:9px;font-size:12px}
+.status-good{color:green}
+.status-repair{color:#d97706}
+.status-replace{color:#d71920}
+.status-attention{color:#2563eb}
+.btn{
+ border:0;padding:12px 18px;border-radius:6px;
+ cursor:pointer;font-weight:bold;font-size:13px
+}
+.red{background:var(--red);color:white}
+.dark{background:#222;color:white}
+.light{background:#eee;color:#222}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.counter{font-size:13px;color:#666;margin-top:12px}
+.photo-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.photo-preview img{width:100px;height:90px;object-fit:cover;border-radius:6px}
+#report{display:none}
+@media(max-width:850px){
+ .sidebar{position:relative;width:100%;height:auto;padding:12px}
+ .brand{margin-bottom:10px}
+ .sidebar nav{display:flex;overflow-x:auto}
+ .sidebar a{white-space:nowrap}
+ .main{margin:0;padding:14px}
+ .grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+ .grid{grid-template-columns:1fr}
+ .item{grid-template-columns:1fr 1fr}
+ .item input{grid-column:1/-1}
+ h1{font-size:21px}
+}
+@media print{
+ body{background:white}
+ .sidebar,.top,.actions,.no-print,.btn{display:none!important}
+ .main{margin:0;padding:0}
+ .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+ #report{display:block}
+ .inspection-list{display:block}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+ <div class="brand">800 <span>CAR</span><br>AUTO CARE</div>
+ <nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="customers.html">Customers</a>
+  <a href="vehicles.html">Vehicles</a>
+  <a class="active" href="inspection.html">Vehicle Inspection</a>
+  <a href="estimate.html">Estimates</a>
+  <a href="jobs.html">Jobs</a>
+  <a href="invoice.html">Invoices</a>
+  <a href="employees.html">Employees</a>
+  <a href="reports.html">Reports</a>
+ </nav>
+</aside>
+
+<main class="main">
+
+<div class="top">
+ <div>
+  <h1>Vehicle Inspection Report</h1>
+  <div class="sub">800 Car Auto Care | Professional Vehicle Checkup</div>
+ </div>
+ <button class="btn dark" onclick="location.href='vehicles.html'">← Back to Vehicles</button>
+</div>
+
+<div class="card">
+ <h2>Vehicle & Customer Information</h2>
+ <div class="grid">
+  <div class="field"><label>Customer Name</label><input id="customer" placeholder="Customer name"></div>
+  <div class="field"><label>Phone Number</label><input id="phone" placeholder="Phone number"></div>
+  <div class="field"><label>Vehicle Make</label><input id="make" placeholder="e.g. Toyota"></div>
+  <div class="field"><label>Model</label><input id="model" placeholder="e.g. Camry"></div>
+  <div class="field"><label>Year</label><input id="year" placeholder="Year"></div>
+  <div class="field"><label>Plate Number</label><input id="plate" placeholder="Plate number"></div>
+  <div class="field"><label>VIN / Chassis Number</label><input id="vin" placeholder="VIN number"></div>
+  <div class="field"><label>Current Mileage (KM)</label><input id="mileage" type="number" placeholder="Mileage"></div>
+  <div class="field"><label>Inspection Date</label><input id="date" type="date"></div>
+  <div class="field"><label>Mechanic Name</label><input id="mechanic" placeholder="Mechanic name"></div>
+  <div class="field"><label>Job Card / Reference No.</label><input id="jobno" placeholder="Reference number"></div>
+  <div class="field"><label>Fuel Type</label>
+   <select id="fuel"><option value="">Select</option><option>Petrol</option><option>Diesel</option><option>Hybrid</option><option>Electric</option></select>
+  </div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Vehicle Condition Inspection</h2>
+ <p class="sub">Select the condition of each item and add mechanic remarks where necessary.</p>
+ <div id="inspectionList" class="inspection-list"></div>
+ <div class="counter" id="counter">0 items checked</div>
+</div>
+
+<div class="card">
+ <h2>General Inspection Notes</h2>
+ <div class="field">
+  <label>Mechanic Overall Remarks</label>
+  <textarea id="remarks" placeholder="Write overall vehicle condition and mechanic observations..."></textarea>
+ </div>
+ <br>
+ <div class="field">
+  <label>Recommended Work / Customer Attention</label>
+  <textarea id="recommendations" placeholder="List recommended repairs or items requiring attention..."></textarea>
+ </div>
+</div>
+
+<div class="card no-print">
+ <h2>Vehicle Photos</h2>
+ <label class="field">
+  <span style="font-size:13px;font-weight:bold">Upload inspection photos</span><br><br>
+  <input type="file" id="photos" accept="image/*" multiple>
+ </label>
+ <div class="photo-preview" id="photoPreview"></div>
+ <p class="sub">Photos are previewed on this page. Permanent online photo storage will be connected through Supabase.</p>
+</div>
+
+<div class="card">
+ <h2>Inspection Confirmation</h2>
+ <div class="grid">
+  <div class="field"><label>Customer Approval / Acknowledgement</label>
+   <select id="approval"><option>Pending</option><option>Customer Informed</option><option>Customer Acknowledged</option></select>
+  </div>
+  <div class="field"><label>Mechanic Signature / Name</label><input id="signature" placeholder="Mechanic signature name"></div>
+  <div class="field"><label>Customer Signature / Name</label><input id="customersign" placeholder="Customer signature name"></div>
+ </div>
+ <p class="sub">This report records vehicle condition only. Repair prices and quotations are prepared separately.</p>
+</div>
+
+<div class="actions no-print">
+ <button class="btn red" onclick="saveInspection()">Save Inspection</button>
+ <button class="btn dark" onclick="printReport()">Print / Save PDF</button>
+ <button class="btn light" onclick="newInspection()">New Inspection</button>
+</div>
+
+<div id="report">
+ <h2>800 CAR AUTO CARE</h2>
+ <h3>VEHICLE INSPECTION REPORT</h3>
+ <div id="reportContent"></div>
+</div>
+
+</main>
+
+<script>
+const sections = {
+"ENGINE": [
+"Engine oil level and condition","Engine oil leakage","Coolant level","Coolant leakage",
+"Radiator condition","Radiator hoses","Drive belts","Engine mounting",
+"Air filter condition","Engine noise","Exhaust smoke","Engine warning light"
+],
+"TRANSMISSION & DRIVETRAIN": [
+"Transmission fluid condition","Transmission leakage","Gear shifting operation",
+"Clutch operation","Drive shaft / CV joints","Differential condition"
+],
+"BRAKES": [
+"Front brake pads","Rear brake pads","Brake discs / rotors","Brake fluid level",
+"Brake hoses and lines","Handbrake operation","ABS warning light"
+],
+"SUSPENSION & STEERING": [
+"Front shock absorbers","Rear shock absorbers","Suspension bushes",
+"Ball joints","Tie rod ends","Steering operation","Power steering fluid"
+],
+"TYRES & WHEELS": [
+"Front left tyre","Front right tyre","Rear left tyre","Rear right tyre",
+"Spare tyre","Tyre pressure","Wheel alignment condition","Wheel nuts"
+],
+"ELECTRICAL & BATTERY": [
+"Battery condition","Battery terminals","Alternator charging","Starter motor",
+"Headlights","Tail lights","Indicators","Brake lights","Wipers","Horn",
+"Power windows","Dashboard warning lights"
+],
+"COOLING & AIR CONDITIONING": [
+"AC cooling performance","AC compressor","AC condenser","Cooling fan",
+"Cabin air filter","Heater operation"
+],
+"BODY & INTERIOR": [
+"Windshield condition","Windows and mirrors","Doors and locks",
+"Seat belts","Interior condition","Exterior body condition","Paint condition",
+"Central locking","Dashboard condition"
+]
+};
+
+const list = document.getElementById("inspectionList");
+let itemIndex = 0;
+
+Object.entries(sections).forEach(([section,items])=>{
+ const heading=document.createElement("div");
+ heading.className="section-title";
+ heading.textContent=section;
+ list.appendChild(heading);
+
+ items.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="item";
+
+  const name=document.createElement("div");
+  name.className="item-name";
+  name.textContent=item;
+
+  const select=document.createElement("select");
+  select.className="condition";
+  select.dataset.item=item;
+  ["Not Checked","Good","Need Repair","Need Replacement","Attention / Monitor"].forEach(value=>{
+   const option=document.createElement("option");
+   option.value=value;
+   option.textContent=value;
+   select.appendChild(option);
+  });
+  select.addEventListener("change",updateCounter);
+
+  const remark=document.createElement("input");
+  remark.className="item-remark";
+  remark.placeholder="Mechanic remarks (optional)";
+
+  row.append(name,select,remark);
+  list.appendChild(row);
+  itemIndex++;
+ });
+});
+
+function updateCounter(){
+ const checked=[...document.querySelectorAll(".condition")]
+ .filter(x=>x.value!=="Not Checked").length;
+ document.getElementById("counter").textContent=
+ checked+" of "+itemIndex+" items checked";
+}
+
+function loadVehicle(){
+ const vehicle=JSON.parse(localStorage.getItem("800car_selected_vehicle")||"null");
+ if(!vehicle)return;
+
+ const fields={
+ customer:vehicle.customerName||vehicle.customer||"",
+ make:vehicle.make||"",
+ model:vehicle.model||"",
+ year:vehicle.year||"",
+ plate:vehicle.plate||vehicle.plateNumber||"",
+ vin:vehicle.vin||"",
+ mileage:vehicle.mileage||"",
+ fuel:vehicle.fuel||""
+ };
+ Object.entries(fields).forEach(([id,value])=>{
+  if(document.getElementById(id))document.getElementById(id).value=value;
+ });
+ const customer=JSON.parse(localStorage.getItem("800car_customers")||"[]");
+ const found=customer.find(c=>c.id===vehicle.customerId);
+ if(found){
+  document.getElementById("customer").value=found.name||found.customerName||fields.customer;
+  document.getElementById("phone").value=found.phone||"";
+ }
+}
+
+function collectData(){
+ const conditions=[...document.querySelectorAll(".item")].map(row=>({
+  item:row.querySelector(".item-name").textContent,
+  condition:row.querySelector(".condition").value,
+  remarks:row.querySelector(".item-remark").value
+ }));
+ return {
+  id:"INS-"+Date.now(),
+  customer:document.getElementById("customer").value,
+  phone:document.getElementById("phone").value,
+  make:document.getElementById("make").value,
+  model:document.getElementById("model").value,
+  year:document.getElementById("year").value,
+  plate:document.getElementById("plate").value,
+  vin:document.getElementById("vin").value,
+  mileage:document.getElementById("mileage").value,
+  date:document.getElementById("date").value,
+  mechanic:document.getElementById("mechanic").value,
+  jobno:document.getElementById("jobno").value,
+  fuel:document.getElementById("fuel").value,
+  conditions,
+  remarks:document.getElementById("remarks").value,
+  recommendations:document.getElementById("recommendations").value,
+  approval:document.getElementById("approval").value,
+  signature:document.getElementById("signature").value,
+  customersign:document.getElementById("customersign").value,
+  createdAt:new Date().toISOString()
+ };
+}
+
+function saveInspection(){
+ const data=collectData();
+ if(!data.customer||!data.plate){
+  alert("Please enter customer name and vehicle plate number.");
+  return;
+ }
+ if(!data.mechanic){
+  alert("Please enter mechanic name.");
+  return;
+ }
+ let records=JSON.parse(localStorage.getItem("800car_inspections")||"[]");
+ records.push(data);
+ localStorage.setItem("800car_inspections",JSON.stringify(records));
+ localStorage.setItem("800car_selected_inspection",JSON.stringify(data));
+ alert("Inspection saved successfully!");
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,char=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[char]));
+}
+
+function printReport(){
+ const data=collectData();
+ if(!data.customer||!data.plate){
+  alert("Please enter customer name and plate number first.");
+  return;
+ }
+ const rows=data.conditions.map(x=>
+ `<tr><td>${escapeHTML(x.item)}</td><td>${escapeHTML(x.condition)}</td><td>${escapeHTML(x.remarks)}</td></tr>`
+ ).join("");
+
+ document.getElementById("reportContent").innerHTML=`
+ <p><b>Inspection No:</b> ${escapeHTML(data.jobno||data.id)}</p>
+ <p><b>Date:</b> ${escapeHTML(data.date)}</p>
+ <p><b>Customer:</b> ${escapeHTML(data.customer)} &nbsp; <b>Phone:</b> ${escapeHTML(data.phone)}</p>
+ <p><b>Vehicle:</b> ${escapeHTML(data.year)} ${escapeHTML(data.make)} ${escapeHTML(data.model)}</p>
+ <p><b>Plate:</b> ${escapeHTML(data.plate)} &nbsp; <b>VIN:</b> ${escapeHTML(data.vin)}</p>
+ <p><b>Mileage:</b> ${escapeHTML(data.mileage)} KM &nbsp; <b>Fuel:</b> ${escapeHTML(data.fuel)}</p>
+ <p><b>Mechanic:</b> ${escapeHTML(data.mechanic)}</p>
+ <table border="1" cellspacing="0" cellpadding="7" width="100%" style="border-collapse:collapse;font-size:11px">
+ <thead><tr><th>Inspection Item</th><th>Condition</th><th>Mechanic Remarks</th></tr></thead>
+ <tbody>${rows}</tbody></table>
+ <h3>Overall Mechanic Remarks</h3><p>${escapeHTML(data.remarks)}</p>
+ <h3>Recommendations</h3><p>${escapeHTML(data.recommendations)}</p>
+ <p><b>Customer Acknowledgement:</b> ${escapeHTML(data.approval)}</p>
+ <br><p>Mechanic Signature: ${escapeHTML(data.signature)}</p>
+ <p>Customer Signature: ${escapeHTML(data.customersign)}</p>
+ <hr><p><b>800 CAR AUTO CARE</b> | Vehicle Inspection Report</p>
+ `;
+ window.print();
+}
+
+function newInspection(){
+ if(confirm("Start a new inspection? Unsaved changes will be lost.")){
+  document.querySelectorAll("input,textarea").forEach(x=>{
+   if(x.type!=="file")x.value="";
+  });
+  document.querySelectorAll("select").forEach(x=>x.selectedIndex=0);
+  document.getElementById("date").value=new Date().toISOString().slice(0,10);
+  document.getElementById("photoPreview").innerHTML="";
+  updateCounter();
+ }
+}
+
+document.getElementById("photos").addEventListener("change",function(){
+ const preview=document.getElementById("photoPreview");
+ preview.innerHTML="";
+ [...this.files].forEach(file=>{
+  if(!file.type.startsWith("image/"))return;
+  const img=document.createElement("img");
+  img.src=URL.createObjectURL(file);
+  preview.appendChild(img);
+ });
+});
+
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+loadVehicle();
+updateCounter();
+</script>
+
+</body>
+</html>
