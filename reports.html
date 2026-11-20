@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports & Analytics | 800 Car Auto Care</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f4f4f4;
+ color:#222;
+}
+header{
+ background:#151515;
+ color:white;
+ padding:18px 22px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+}
+header h2{margin:0;color:#e53935}
+header span{font-size:12px;color:#ccc}
+.container{max-width:1250px;margin:auto;padding:22px}
+.top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:12px;
+ margin-bottom:20px;
+}
+button{
+ border:0;
+ border-radius:6px;
+ padding:11px 16px;
+ cursor:pointer;
+ font-weight:bold;
+}
+.red{background:#e53935;color:white}
+.dark{background:#222;color:white}
+.gray{background:#777;color:white}
+.filters{
+ display:flex;
+ gap:12px;
+ align-items:end;
+ flex-wrap:wrap;
+}
+.filters div{min-width:150px}
+label{
+ display:block;
+ font-size:12px;
+ font-weight:bold;
+ margin-bottom:6px;
+}
+input,select{
+ width:100%;
+ padding:11px;
+ border:1px solid #ddd;
+ border-radius:6px;
+ background:white;
+}
+.section-title{margin:25px 0 14px}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+ gap:14px;
+}
+.stat{
+ background:white;
+ padding:17px;
+ border-radius:9px;
+ border-left:4px solid #e53935;
+ box-shadow:0 2px 8px #0000000c;
+}
+.stat small{color:#777;font-size:12px}
+.stat h2{font-size:24px;margin:10px 0 5px}
+.stat p{font-size:11px;color:#888;margin:0}
+.card{
+ background:white;
+ border-radius:10px;
+ padding:20px;
+ margin-top:18px;
+ box-shadow:0 2px 9px #0000000c;
+}
+.card h3{margin-top:0}
+.chart-row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:18px;
+}
+.bar-line{margin:17px 0}
+.bar-head{
+ display:flex;
+ justify-content:space-between;
+ font-size:13px;
+ margin-bottom:7px;
+}
+.track{
+ height:11px;
+ background:#eee;
+ border-radius:20px;
+ overflow:hidden;
+}
+.fill{
+ height:100%;
+ background:#e53935;
+ border-radius:20px;
+}
+table{width:100%;border-collapse:collapse}
+th,td{
+ padding:12px;
+ border-bottom:1px solid #eee;
+ text-align:left;
+ font-size:13px;
+}
+th{background:#222;color:white}
+.table-wrap{overflow-x:auto}
+.green{color:#16823a;font-weight:bold}
+.red-text{color:#e53935;font-weight:bold}
+.note{
+ background:#fff4e5;
+ padding:13px;
+ border-radius:7px;
+ color:#805400;
+ font-size:12px;
+ margin-top:15px;
+ line-height:1.6;
+}
+footer{text-align:center;color:#888;font-size:12px;padding:22px}
+@media(max-width:700px){
+ .container{padding:13px}
+ .chart-row{grid-template-columns:1fr}
+ .card{padding:14px}
+}
+@media print{
+ body{background:white}
+ header button,.filters,.no-print{display:none!important}
+ .container{padding:0;max-width:none}
+ .card,.stat{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div>
+  <h2>800 CAR AUTO CARE</h2>
+  <span>Business Reports & Analytics</span>
+ </div>
+ <button class="dark" onclick="location.href='dashboard.html'">Dashboard</button>
+</header>
+
+<div class="container">
+
+ <div class="top">
+  <div>
+   <h2>Reports & Analytics</h2>
+   <p style="color:#777;margin:5px 0">Garage business performance overview</p>
+  </div>
+  <button class="red no-print" onclick="window.print()">Print / Save PDF</button>
+ </div>
+
+ <div class="card no-print">
+  <h3>Report Filters</h3>
+  <div class="filters">
+   <div>
+    <label>From Date</label>
+    <input type="date" id="fromDate">
+   </div>
+   <div>
+    <label>To Date</label>
+    <input type="date" id="toDate">
+   </div>
+   <div>
+    <label>Quick Filter</label>
+    <select id="quickFilter">
+     <option value="all">All Time</option>
+     <option value="today">Today</option>
+     <option value="week">Last 7 Days</option>
+     <option value="month">This Month</option>
+     <option value="year">This Year</option>
+    </select>
+   </div>
+   <button class="red" onclick="applyFilter()">Apply Filter</button>
+   <button class="gray" onclick="resetFilter()">Reset</button>
+  </div>
+ </div>
+
+ <h3 class="section-title">Business Overview</h3>
+
+ <div class="stats">
+  <div class="stat">
+   <small>Total Customers</small>
+   <h2 id="customers">0</h2>
+   <p>Registered customers</p>
+  </div>
+  <div class="stat">
+   <small>Total Vehicles</small>
+   <h2 id="vehicles">0</h2>
+   <p>Registered vehicles</p>
+  </div>
+  <div class="stat">
+   <small>Total Employees</small>
+   <h2 id="employees">0</h2>
+   <p>Garage staff</p>
+  </div>
+  <div class="stat">
+   <small>Inspections</small>
+   <h2 id="inspections">0</h2>
+   <p>Inspection reports</p>
+  </div>
+ </div>
+
+ <h3 class="section-title">Workshop Performance</h3>
+
+ <div class="stats">
+  <div class="stat">
+   <small>Total Jobs</small>
+   <h2 id="jobs">0</h2>
+   <p>Workshop jobs</p>
+  </div>
+  <div class="stat">
+   <small>Completed Jobs</small>
+   <h2 id="completed">0</h2>
+   <p>Completed / delivered</p>
+  </div>
+  <div class="stat">
+   <small>Pending Jobs</small>
+   <h2 id="pending">0</h2>
+   <p>In progress / pending</p>
+  </div>
+  <div class="stat">
+   <small>Cancelled Jobs</small>
+   <h2 id="cancelled">0</h2>
+   <p>Cancelled work</p>
+  </div>
+ </div>
+
+ <h3 class="section-title">Financial Summary</h3>
+
+ <div class="stats">
+  <div class="stat">
+   <small>Total Revenue</small>
+   <h2 id="revenue">AED 0.00</h2>
+   <p>Invoice totals</p>
+  </div>
+  <div class="stat">
+   <small>Amount Received</small>
+   <h2 id="received">AED 0.00</h2>
+   <p>Payments received</p>
+  </div>
+  <div class="stat">
+   <small>Outstanding Balance</small>
+   <h2 id="outstanding">AED 0.00</h2>
+   <p>Unpaid invoice balance</p>
+  </div>
+  <div class="stat">
+   <small>Estimated Profit</small>
+   <h2 id="profit">AED 0.00</h2>
+   <p>Based on recorded costs</p>
+  </div>
+ </div>
+
+ <div class="chart-row">
+
+  <div class="card">
+   <h3>Job Status Breakdown</h3>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Completed</span>
+     <b id="completedLabel">0</b>
+    </div>
+    <div class="track"><div class="fill" id="completedBar"></div></div>
+   </div>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Pending / In Progress</span>
+     <b id="pendingLabel">0</b>
+    </div>
+    <div class="track"><div class="fill" id="pendingBar"></div></div>
+   </div>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Cancelled</span>
+     <b id="cancelledLabel">0</b>
+    </div>
+    <div class="track"><div class="fill" id="cancelledBar"></div></div>
+   </div>
+  </div>
+
+  <div class="card">
+   <h3>Financial Breakdown</h3>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Received</span>
+     <b id="receivedLabel">AED 0</b>
+    </div>
+    <div class="track"><div class="fill" id="receivedBar"></div></div>
+   </div>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Outstanding</span>
+     <b id="outstandingLabel">AED 0</b>
+    </div>
+    <div class="track"><div class="fill" id="outstandingBar"></div></div>
+   </div>
+   <div class="bar-line">
+    <div class="bar-head">
+     <span>Estimated Profit</span>
+     <b id="profitLabel">AED 0</b>
+    </div>
+    <div class="track"><div class="fill" id="profitBar"></div></div>
+   </div>
+  </div>
+
+ </div>
+
+ <div class="card">
+  <h3>Recent Invoices</h3>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Invoice No.</th>
+      <th>Date</th>
+      <th>Customer</th>
+      <th>Total</th>
+      <th>Received</th>
+      <th>Balance</th>
+     </tr>
+    </thead>
+    <tbody id="invoiceList"></tbody>
+   </table>
+  </div>
+  <p id="noInvoices" style="display:none;text-align:center;color:#888">No invoices found.</p>
+ </div>
+
+ <div class="card">
+  <h3>Recent Workshop Jobs</h3>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Job ID</th>
+      <th>Vehicle</th>
+      <th>Mechanic</th>
+      <th>Status</th>
+      <th>Priority</th>
+     </tr>
+    </thead>
+    <tbody id="jobList"></tbody>
+   </table>
+  </div>
+  <p id="noJobs" style="display:none;text-align:center;color:#888">No jobs found.</p>
+ </div>
+
+ <div class="note">
+  <b>Important:</b> Reports are calculated from records currently saved in this browser. Revenue is based on saved invoices. Estimated profit is calculated from invoice totals minus recorded estimate costs where available. This is not yet a live Supabase report or a verified accounting statement. Add expenses and purchase costs separately for accurate net profit.
+ </div>
+
+</div>
+
+<footer>800 CAR AUTO CARE | Business Reports</footer>
+
+<script>
+const read = key => {
+ try{
+  const value = JSON.parse(localStorage.getItem(key) || "[]");
+  return Array.isArray(value) ? value : [];
+ }catch(e){return []}
+};
+
+const money = value => "AED " + Number(value || 0).toLocaleString("en-AE",{
+ minimumFractionDigits:2,
+ maximumFractionDigits:2
+});
+
+let all = {
+ customers:read("800car_customers"),
+ vehicles:read("800car_vehicles"),
+ employees:read("800car_employees"),
+ inspections:read("800car_inspections"),
+ jobs:read("800car_jobs"),
+ invoices:read("800car_invoices"),
+ estimates:read("800car_estimates")
+};
+
+let from = null;
+let to = null;
+
+function getDate(record){
+ const raw = record.date || record.createdAt || record.created_at ||
+ record.invoiceDate || record.joiningDate || "";
+ if(!raw) return null;
+ const d = new Date(raw);
+ return isNaN(d.getTime()) ? null : d;
+}
+
+function inRange(record){
+ if(!from && !to) return true;
+ const d = getDate(record);
+ if(!d) return false;
+
+ const day = new Date(d.getFullYear(),d.getMonth(),d.getDate());
+
+ if(from && day < from) return false;
+ if(to && day > to) return false;
+ return true;
+}
+
+function sum(records,callback){
+ return records.reduce((total,item) => total + Number(callback(item) || 0),0);
+}
+
+function amount(obj,...keys){
+ for(const key of keys){
+  if(obj[key] !== undefined && obj[key] !== null && obj[key] !== ""){
+   const n = Number(obj[key]);
+   if(Number.isFinite(n)) return n;
+  }
+ }
+ return 0;
+}
+
+function invoiceTotal(i){
+ return amount(i,"total","grandTotal","grand_total","amount","totalAmount");
+}
+
+function invoiceReceived(i){
+ return amount(i,"received","amountReceived","amount_received","paidAmount","paid");
+}
+
+function invoiceBalance(i){
+ const stored = i.balance ?? i.balanceDue ?? i.balance_due;
+ if(stored !== undefined && stored !== null && stored !== ""){
+  return Math.max(0,Number(stored) || 0);
+ }
+ return Math.max(0,invoiceTotal(i)-invoiceReceived(i));
+}
+
+function jobStatus(job){
+ return String(job.status || "").toLowerCase();
+}
+
+function isCompleted(job){
+ return ["completed","delivered","complete"].includes(jobStatus(job));
+}
+
+function isCancelled(job){
+ return ["cancelled","canceled"].includes(jobStatus(job));
+}
+
+function isPending(job){
+ return !isCompleted(job) && !isCancelled(job);
+}
+
+function getCustomerName(invoice){
+ return invoice.customerName || invoice.customer || invoice.customer_name || "-";
+}
+
+function getJobVehicle(job){
+ return job.vehicleName || job.vehicle || job.registration ||
+ job.plate || job.vehicleNumber || "-";
+}
+
+function getMechanic(job){
+ return job.mechanic || job.mechanicName || job.assignedTo || "-";
+}
+
+function getProfit(invoice){
+ const estimate = all.estimates.find(e =>
+  e.id === invoice.estimateRef ||
+  e.id === invoice.estimateId ||
+  e.id === invoice.estimate_id
+ );
+
+ if(!estimate) return 0;
+
+ const cost = amount(estimate,"costTotal","totalCost","cost_total","totalCostPrice");
+ return invoiceTotal(invoice)-cost;
+}
+
+function setText(id,value){
+ document.getElementById(id).textContent = value;
+}
+
+function setBar(id,value,total){
+ document.getElementById(id).style.width =
+  (total > 0 ? Math.max(0,Math.min(100,value/total*100)) : 0) + "%";
+}
+
+function updateReports(){
+ const customers = all.customers.length;
+ const vehicles = all.vehicles.length;
+ const employees = all.employees.length;
+
+ const inspections = all.inspections.filter(inRange);
+ const jobs = all.jobs.filter(inRange);
+ const invoices = all.invoices.filter(inRange);
+
+ const completed = jobs.filter(isCompleted).length;
+ const cancelled = jobs.filter(isCancelled).length;
+ const pending = jobs.filter(isPending).length;
+
+ const revenue = sum(invoices,invoiceTotal);
+ const received = sum(invoices,invoiceReceived);
+ const outstanding = sum(invoices,invoiceBalance);
+ const profit = sum(invoices,getProfit);
+
+ setText("customers",customers);
+ setText("vehicles",vehicles);
+ setText("employees",employees);
+ setText("inspections",inspections.length);
+
+ setText("jobs",jobs.length);
+ setText("completed",completed);
+ setText("pending",pending);
+ setText("cancelled",cancelled);
+
+ setText("revenue",money(revenue));
+ setText("received",money(received));
+ setText("outstanding",money(outstanding));
+ setText("profit",money(profit));
+
+ setText("completedLabel",completed);
+ setText("pendingLabel",pending);
+ setText("cancelledLabel",cancelled);
+
+ setBar("completedBar",completed,jobs.length);
+ setBar("pendingBar",pending,jobs.length);
+ setBar("cancelledBar",cancelled,jobs.length);
+
+ setText("receivedLabel",money(received));
+ setText("outstandingLabel",money(outstanding));
+ setText("profitLabel",money(Math.max(0,profit)));
+
+ setBar("receivedBar",received,revenue);
+ setBar("outstandingBar",outstanding,revenue);
+ setBar("profitBar",Math.max(0,profit),revenue);
+
+ renderInvoices(invoices);
+ renderJobs(jobs);
+}
+
+function renderInvoices(invoices){
+ const tbody = document.getElementById("invoiceList");
+ tbody.innerHTML = "";
+
+ const recent = [...invoices].reverse().slice(0,10);
+
+ document.getElementById("noInvoices").style.display =
+  recent.length ? "none" : "block";
+
+ recent.forEach(i => {
+  const tr = document.createElement("tr");
+  const date = getDate(i);
+  const invoiceNo = i.invoiceNo || i.invoiceNumber || i.id || "-";
+
+  tr.innerHTML = `
+   <td>${safe(invoiceNo)}</td>
+   <td>${date ? date.toLocaleDateString() : "-"}</td>
+   <td>${safe(getCustomerName(i))}</td>
+   <td>${money(invoiceTotal(i))}</td>
+   <td class="green">${money(invoiceReceived(i))}</td>
+   <td class="red-text">${money(invoiceBalance(i))}</td>
+  `;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderJobs(jobs){
+ const tbody = document.getElementById("jobList");
+ tbody.innerHTML = "";
+
+ const recent = [...jobs].reverse().slice(0,10);
+
+ document.getElementById("noJobs").style.display =
+  recent.length ? "none" : "block";
+
+ recent.forEach(j => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+   <td>${safe(j.id || j.jobId || "-")}</td>
+   <td>${safe(getJobVehicle(j))}</td>
+   <td>${safe(getMechanic(j))}</td>
+   <td>${safe(j.status || "-")}</td>
+   <td>${safe(j.priority || "-")}</td>
+  `;
+  tbody.appendChild(tr);
+ });
+}
+
+function safe(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function applyFilter(){
+ const f = document.getElementById("fromDate").value;
+ const t = document.getElementById("toDate").value;
+
+ if(f && t && f > t){
+  alert("From Date cannot be after To Date.");
+  return;
+ }
+
+ from = f ? new Date(f+"T00:00:00") : null;
+ to = t ? new Date(t+"T23:59:59") : null;
+
+ document.getElementById("quickFilter").value = "all";
+ updateReports();
+}
+
+function resetFilter(){
+ from = null;
+ to = null;
+ document.getElementById("fromDate").value = "";
+ document.getElementById("toDate").value = "";
+ document.getElementById("quickFilter").value = "all";
+ updateReports();
+}
+
+document.getElementById("quickFilter").addEventListener("change",function(){
+ const now = new Date();
+ const start = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+
+ from = null;
+ to = null;
+
+ if(this.value === "today"){
+  from = start;
+  to = start;
+ }
+ if(this.value === "week"){
+  from = new Date(start);
+  from.setDate(from.getDate()-6);
+  to = start;
+ }
+ if(this.value === "month"){
+  from = new Date(now.getFullYear(),now.getMonth(),1);
+  to = start;
+ }
+ if(this.value === "year"){
+  from = new Date(now.getFullYear(),0,1);
+  to = start;
+ }
+
+ document.getElementById("fromDate").value =
+  from ? formatDate(from) : "";
+ document.getElementById("toDate").value =
+  to ? formatDate(to) : "";
+
+ updateReports();
+});
+
+function formatDate(d){
+ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+updateReports();
+</script>
+
+</body>
+</html>
